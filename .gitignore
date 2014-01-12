@@ -1,0 +1,12 @@
+/.settings
+/.buildpath
+/.project
+/nbproject
+/tests/coverage
+/tests/reports
+/tmp
+/node_modules
+/bower_components
+/vendor/
+/.idea
+/composer.lock
