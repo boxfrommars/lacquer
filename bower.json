@@ -17,12 +17,14 @@
     "tests"
   ],
   "dependencies": {
-      "underscore": "~1.5.2",
-      "bootstrap": "~3.0.2",
-      "jquery": "~2.0.3",
-      "marionette": "~1.4.0",
-      "backbone.localstorage": "~1.1.7",
-      "backbone.syphon": "~0.4.1"
+    "underscore": "~1.5.2",
+    "bootstrap": "~3.0.2",
+    "jquery": "~2.0.3",
+    "marionette": "~1.5.1",
+    "backbone.localstorage": "~1.1.7",
+    "backbone.syphon": "~0.4.1",
+    "momentjs": "~2.5.0",
+    "moment-timezone": "~0.0.3"
   },
   "devDependencies": {}
 }

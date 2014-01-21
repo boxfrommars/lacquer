@@ -1,16 +1,20 @@
 {
-    "undef": true,
-    "eqeqeq": true,
-    "devel": true,
-    "unused": true,
-    "camelcase": true,
+    "browser"   : true,
+    "camelcase" : true,
+    "curly"     : true,
+    "eqeqeq"    : true,
+    "devel"     : true,
+    "indent"    : 4,
+    "jquery"    : true,
+    "noarg"     : true,
+    "trailing"  : true,
+    "undef"     : true,
+    "unused"    : true,
+
     "globals": {
-        "jQuery": true,
-        "Backbone": true,
-        "_": true,
+        "Backbone"  : true,
+        "_"         : true,
         "Marionette": true,
-        "$": true,
-        "App": true,
-        "window": true
+        "App"       : true
     }
 }

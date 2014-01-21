@@ -7,6 +7,8 @@ module.exports = function(grunt) {
         'public/assets/vendor/marionette/backbone.marionette.js',
         'public/assets/vendor/backbone.syphon/lib/backbone.syphon.js',
         'public/assets/vendor/bootstrap/bootstrap.js',
+        'public/assets/vendor/momentjs/moment.js',
+        'public/assets/vendor/moment-timezine/index.js',
     ];
     grunt.initConfig({
         pkg: grunt.file.readJSON('package.json'),
@@ -81,17 +83,26 @@ module.exports = function(grunt) {
                 ]
             }
         },
+        jasmine: {
+            main: {
+                src: 'public/assets/js/**/*.js',
+                options: {
+                    specs: 'test/*spec.js'
+                }
+            }
+        },
+
         watch: {
             vendor: {
-                files: ['public/assets/vendor/**',  'Gruntfile.js'],
+                files: ['public/assets/vendor/**'],
                 tasks: ['clean', 'copy', 'jshint', 'concat', 'uglify', 'cssmin']
             },
             bower: {
                 files: ['bower_components/**'],
-                tasks: ['bower', 'clean', 'copy', 'jshint', 'concat', 'uglify', 'cssmin']
+                tasks: ['bower', 'concat:vendor', 'uglify:vendor', 'cssmin:vendor']
             },
             js: {
-                files: ['public/assets/js/**'],
+                files: ['public/assets/js/**', '.jshintrc'],
                 tasks: ['jshint', 'concat:main', 'uglify:main']
             },
             css: {
@@ -116,5 +127,5 @@ module.exports = function(grunt) {
 
     grunt.registerTask('default', ['bower', 'clean', 'copy', 'jshint', 'concat', 'uglify', 'cssmin']);
     grunt.registerTask('js', ['jshint', 'concat:main', 'uglify:main']);
-    grunt.registerTask('css', ['jshint', 'concat:main', 'uglify:main']);
+    grunt.registerTask('css', ['cssmin']);
 };
