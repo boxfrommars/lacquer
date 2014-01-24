@@ -9,12 +9,14 @@
     "noarg"     : true,
     "trailing"  : true,
     "undef"     : true,
-    "unused"    : true,
+    "unused"    : false,
 
     "globals": {
         "Backbone"  : true,
         "_"         : true,
         "Marionette": true,
-        "App"       : true
+        "Lacquer"   : true,
+        "Handlebars": true,
+        "JST"       : true
     }
 }

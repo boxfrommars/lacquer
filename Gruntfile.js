@@ -3,12 +3,20 @@ module.exports = function(grunt) {
         'public/assets/vendor/jquery/jquery.js',
         'public/assets/vendor/underscore/underscore.js',
         'public/assets/vendor/backbone/backbone.js',
-        'public/assets/vendor/backbone.localStorage.js',
         'public/assets/vendor/marionette/backbone.marionette.js',
         'public/assets/vendor/backbone.syphon/lib/backbone.syphon.js',
+        'public/assets/vendor/handlebars/handlebars.js',
         'public/assets/vendor/bootstrap/bootstrap.js',
         'public/assets/vendor/momentjs/moment.js',
-        'public/assets/vendor/moment-timezine/index.js',
+        'public/assets/vendor/moment-timezine/index.js'
+    ];
+
+    var mainJsFiles = [
+        'public/assets/js/lacquer/config/**/*.js',
+        'public/assets/js/lacquer/app.js',
+        'public/assets/js/lacquer/entities/**/*.js',
+        'public/assets/js/lacquer/views/**/*.js',
+        'public/assets/js/lacquer/apps/**/*.js'
     ];
     grunt.initConfig({
         pkg: grunt.file.readJSON('package.json'),
@@ -37,7 +45,7 @@ module.exports = function(grunt) {
                 dest: 'public/js/vendor.js'
             },
             main: {
-                src: ['public/assets/js/**/*.js'],
+                src: mainJsFiles,
                 dest: 'public/js/scripts.js'
             }
         },
@@ -91,27 +99,57 @@ module.exports = function(grunt) {
                 }
             }
         },
+        handlebars: {
+            compile: {
+                options: {
+                    namespace: "JST",
+                    processName: function(path) {
 
+                        // отрезаем ненужную часть пути
+                        var appsCwd = 'public/assets/js/lacquer/apps/';
+                        var baseCwd = 'public/assets/js/lacquer/templates/';
+                        var ext = '.hbs';
+                        path = (path.indexOf(appsCwd) === 0) ? path.slice(appsCwd.length) : path;
+                        path = (path.indexOf(baseCwd) === 0) ? path.slice(baseCwd.length) : path;
+
+
+                        path = (path.indexOf(ext) > 0) ? path.slice(0, path.indexOf(ext)) : path;
+                        return path;
+                    }
+                },
+                expand: true,
+                files: {
+                    "public/js/templates.js": ["public/assets/js/lacquer/apps/**/*.hbs", "public/assets/js/lacquer/templates/**/*.hbs"]
+                }
+            }
+        },
         watch: {
             vendor: {
                 files: ['public/assets/vendor/**'],
                 tasks: ['clean', 'copy', 'jshint', 'concat', 'uglify', 'cssmin']
             },
-            bower: {
-                files: ['bower_components/**'],
-                tasks: ['bower', 'concat:vendor', 'uglify:vendor', 'cssmin:vendor']
-            },
             js: {
-                files: ['public/assets/js/**', '.jshintrc'],
-                tasks: ['jshint', 'concat:main', 'uglify:main']
+                files: ['public/assets/js/**/*.js', '.jshintrc'],
+                tasks: ['jshint', 'concat:main']
             },
             css: {
                 files: ['public/assets/css/**'],
                 tasks: ['cssmin:main']
             },
+            hbs: {
+                files: ["public/assets/js/lacquer/apps/**/*.hbs", "public/assets/js/lacquer/templates/**/*.hbs"],
+                tasks: ['handlebars']
+            },
             files: {
                 files: ['public/assets/img/**', 'public/assets/fonts/**'],
                 tasks: ['clean', 'copy']
+            },
+            compiled: {
+                files: ['public/img/**', 'public/fonts/**', 'public/css/**', 'public/js/**'],
+                tasks: [],
+                options: {
+                    livereload: true
+                }
             }
         }
     });
@@ -124,8 +162,9 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-contrib-jshint');
     grunt.loadNpmTasks('grunt-contrib-cssmin');
     grunt.loadNpmTasks('grunt-contrib-watch');
+    grunt.loadNpmTasks('grunt-contrib-handlebars');
 
-    grunt.registerTask('default', ['bower', 'clean', 'copy', 'jshint', 'concat', 'uglify', 'cssmin']);
+    grunt.registerTask('default', ['bower', 'clean', 'copy', 'jshint', 'concat', 'uglify', 'cssmin', 'handlebars']);
     grunt.registerTask('js', ['jshint', 'concat:main', 'uglify:main']);
     grunt.registerTask('css', ['cssmin']);
 };

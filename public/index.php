@@ -1,69 +1,63 @@
+<?php
+use \Symfony\Component\HttpFoundation\Response;
+use \Symfony\Component\HttpFoundation\Request;
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="">
-    <meta name="author" content="">
+$startTime = microtime(true);
+require_once __DIR__.'/../vendor/autoload.php';
 
-    <title>Tux</title>
+$config = array(
+    'starttime' => $startTime,
+    'debug' => true,
+    'tmp_path' => '../tmp',
+    'view_path' => realpath(__DIR__ . '/../src/views'),
+    'application_path' => realpath(__DIR__ . '/..'),
+    'config' => array(
+        'db' => array(
+            'db.options' => array(
+                'driver' => 'pdo_pgsql',
+                'host' => 'localhost',
+                'dbname' => 'romanov',
+                'user' => 'romanov',
+                'password' => 'romanov',
+            ),
+        ),
+    ),
+);
 
-    <link href="/css/vendor.css" rel="stylesheet">
-    <style>
-        body {
-            padding-top: 50px;
-        }
-    </style>
+/** @var \Doctrine\DBAL\Connection[]|\Doctrine\Common\Cache\Cache[]|\Symfony\Component\Form\FormFactory[]|Twig_Environment[]|Pimple|Monolog\Logger[]|\Whale\App|Request[]|\Symfony\Component\Serializer\Serializer[] $app  */
+$app = new Whale\App($config);
 
-    <!--[if lt IE 9]>
-    <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-    <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
-    <![endif]-->
-</head>
 
-<body>
+$app->register(new \Silex\Provider\SerializerServiceProvider());
 
-<div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
-    <div class="container">
-        <div class="navbar-header">
-            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-                <span class="sr-only">Toggle navigation</span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-            </button>
-            <a class="navbar-brand" href="#">Tux</a>
-        </div>
-        <div class="collapse navbar-collapse">
-            <ul class="nav navbar-nav">
-                <li class="active"><a href="#">Home</a></li>
-                <li><a href="#">About</a></li>
-                <li><a href="#">Contact</a></li>
-            </ul>
-        </div>
-    </div>
-</div>
 
-<div class="container">
-    <div>
-        <div class="row">
-            <div class="col-md-8">
-                <h3>main section</h3>
-                <div id="main-region">
-                    <p>Here is static content in the web page. You'll notice that it gets replaced by our app as soon as we start it.</p>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <h3>side section</h3>
-            </div>
-        </div>
-    </div>
-</div>
+$app->get('/', function() use($app) {
+    return $app['twig']->render('index.twig');
+});
 
-<div id="dialog-region"></div>
-<script src="/js/vendor.js"></script>
-<script src="/js/scripts.js"></script>
-</body>
-</html>
+
+$app->get("/api/v1/test", function () use ($app) {
+    $result = array ('success' => true);
+
+    return new Response($app['serializer']->serialize($result, 'json'), 200, array("Content-Type" => $app['request']->getMimeType('json')));
+});
+
+
+$app->get("/api/v1/users", function () use ($app) {
+    $result = array (
+        array('id' => 1, 'first_name' => 'Vera', 'last_name' => 'Gzhel'),
+        array('id' => 2, 'first_name' => 'Dmitry', 'last_name' => 'Groza'),
+        array('id' => 3, 'first_name' => 'Nadja', 'last_name' => 'Gimmer'),
+    );
+
+    $result = array();
+
+    foreach ($result as &$user) {
+        $user['full_name'] = $user['first_name'] . ' ' . $user['last_name'];
+        $user['created_at'] = '2013/12/29';
+    }
+
+    return new Response($app['serializer']->serialize($result, 'json'), 200, array("Content-Type" => $app['request']->getMimeType('json')));
+});
+
+$app->run();
